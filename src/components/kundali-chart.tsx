@@ -31,72 +31,78 @@ interface House {
 }
 
 const housePositions: { [key: number]: { x: number; y: number } } = {
-  1: { x: 50, y: 25 },
-  2: { x: 25, y: 12.5 },
-  3: { x: 12.5, y: 25 },
-  4: { x: 25, y: 50 },
-  5: { x: 12.5, y: 75 },
-  6: { x: 25, y: 87.5 },
-  7: { x: 50, y: 75 },
-  8: { x: 75, y: 87.5 },
-  9: { x: 87.5, y: 75 },
-  10: { x: 75, y: 50 },
-  11: { x: 87.5, y: 25 },
-  12: { x: 75, y: 12.5 },
-};
-
+    1: { x: 50, y: 25 },
+    2: { x: 25, y: 25 },
+    3: { x: 25, y: 50 },
+    4: { x: 50, y: 50 },
+    5: { x: 25, y: 75 },
+    6: { x: 50, y: 75 },
+    7: { x: 75, y: 75 },
+    8: { x: 75, y: 50 },
+    9: { x: 75, y: 25 },
+    10: { x: 50, y: 25 }, // This will be the same as 1
+    11: { x: 75, y: 25 }, // This will be the same as 9
+    12: { x: 25, y: 25 }, // This will be the same as 2
+  };
+  
 const signPositions: { [key: number]: { x: number; y: number } } = {
-  1: { x: 50, y: 40 },
-  2: { x: 32.5, y: 32.5 },
-  3: { x: 40, y: 50 },
-  4: { x: 50, y: 60 },
-  5: { x: 60, y: 50 },
-  6: { x: 67.5, y: 67.5 },
-  7: { x: 50, y: 60 },
-  8: { x: 32.5, y: 67.5 },
-  9: { x: 40, y: 50 },
-  10: { x: 50, y: 40 },
-  11: { x: 60, y: 50 },
-  12: { x: 67.5, y: 32.5 },
+    1: { x: 50, y: 15 },
+    2: { x: 20, y: 30 },
+    3: { x: 20, y: 45 },
+    4: { x: 35, y: 65 },
+    5: { x: 20, y: 80 },
+    6: { x: 50, y: 85 },
+    7: { x: 80, y: 70 },
+    8: { x: 80, y: 55 },
+    9: { x: 65, y: 35 },
+    10: { x: 80, y: 20 },
+    11: { x: 50, y: 35 },
+    12: { x: 35, y: 20 },
 };
 
 // Simplified positioning for planets within a house
-const getPlanetPositions = (planetCount: number) => {
-  const positions: { x: number; y: number }[] = [];
-  if (planetCount === 1) {
-    return [{ x: 0, y: 0 }];
-  }
-  const angleStep = 360 / planetCount;
-  for (let i = 0; i < planetCount; i++) {
-    const angle = angleStep * i - 90; // Start from top
-    positions.push({
-      x: 8 * Math.cos((angle * Math.PI) / 180),
-      y: 8 * Math.sin((angle * Math.PI) / 180),
-    });
-  }
-  return positions;
+const getPlanetPositions = (planetCount: number, houseId: number) => {
+    const positions: { x: number; y: number }[] = [];
+    const isDiamond = [1, 4, 7, 10].includes(houseId);
+    const radius = isDiamond ? 10 : 6;
+
+    if (planetCount === 1) {
+        return [{ x: 0, y: 5 }];
+    }
+    
+    for (let i = 0; i < planetCount; i++) {
+        // Arrange in a grid-like fashion
+        const row = Math.floor(i / 2);
+        const col = i % 2;
+        positions.push({
+            x: (col * 12) - 6,
+            y: (row * 10) + 5
+        });
+    }
+    return positions;
 };
 
 
 export function KundaliChart({ planetsInHouses, ascendant = 1 }: { planetsInHouses: PlanetsInHouses, ascendant?: number }) {
-  const houses = Array.from({ length: 12 }, (_, i): House => {
-    const houseNumber = i + 1;
-    const sign = ((ascendant - 1 + i) % 12) + 1;
-    return {
-      id: houseNumber,
-      planets: [],
-      sign: sign,
-    };
-  });
+    const houses: House[] = Array.from({ length: 12 }, (_, i) => {
+        const houseNumber = (ascendant + i - 1) % 12 + 1;
+        const houseId = i + 1;
+        return {
+          id: houseId,
+          planets: [],
+          sign: houseNumber,
+        };
+      });
 
   Object.entries(planetsInHouses).forEach(([planet, houseStr]) => {
     const houseNumberMatch = houseStr.match(/\d+/);
     if (houseNumberMatch) {
       const houseNumber = parseInt(houseNumberMatch[0], 10);
-      if (houseNumber >= 1 && houseNumber <= 12) {
+      const houseIndex = (houseNumber - ascendant + 12) % 12;
+      if (houseIndex >= 0 && houseIndex < 12) {
         const planetShortName = planetShortNames[planet as Planet];
         if (planetShortName) {
-            houses[houseNumber - 1].planets.push(planetShortName);
+            houses[houseIndex].planets.push(planetShortName);
         }
       }
     }
@@ -107,25 +113,26 @@ export function KundaliChart({ planetsInHouses, ascendant = 1 }: { planetsInHous
     <div className="w-full max-w-md mx-auto aspect-square">
       <svg viewBox="0 0 100 100" className="w-full h-full">
         {/* Outer Frame */}
-        <path d="M50 0 L100 50 L50 100 L0 50 Z" className="fill-background stroke-red-500/50" strokeWidth="1" />
-        <path d="M50 2 L98 50 L50 98 L2 50 Z" className="fill-background stroke-red-500" strokeWidth="0.5" />
-
+        <rect x="5" y="5" width="90" height="90" className="fill-transparent stroke-red-500" strokeWidth="1" />
+        
         {/* Inner Lines */}
-        <path d="M0 50 L100 50" className="stroke-red-500/70" strokeWidth="0.5" />
-        <path d="M50 0 L50 100" className="stroke-red-500/70" strokeWidth="0.5" />
-        <path d="M0 50 L50 100 L100 50 L50 0 L0 50" className="stroke-red-500/70" strokeWidth="0.5" />
-        <path d="M50 0 L100 50" className="stroke-red-500/70" strokeWidth="0.5" />
-        <path d="M50 100 L0 50" className="stroke-red-500/70" strokeWidth="0.5" />
+        <path d="M5 5 L95 95" className="stroke-red-500/70" strokeWidth="0.5" />
+        <path d="M95 5 L5 95" className="stroke-red-500/70" strokeWidth="0.5" />
+        <path d="M50 5 L5 50" className="stroke-red-500/70" strokeWidth="0.5" />
+        <path d="M50 5 L95 50" className="stroke-red-500/70" strokeWidth="0.5" />
+        <path d="M5 50 L50 95" className="stroke-red-500/70" strokeWidth="0.5" />
+        <path d="M95 50 L50 95" className="stroke-red-500/70" strokeWidth="0.5" />
 
-        {/* Houses */}
+
+        {/* Houses Content */}
         {houses.map((house) => {
-            const { x, y } = housePositions[house.id];
-            const planetPos = getPlanetPositions(house.planets.length);
+            const { x, y } = signPositions[house.id];
+            const planetPos = getPlanetPositions(house.planets.length, house.id);
             return (
                 <g key={`house-${house.id}`}>
-                    {/* House Number */}
-                    <text x={x} y={y} className="text-[6px] fill-white font-bold" textAnchor="middle" dominantBaseline="middle" >
-                        {house.id}
+                    {/* House/Sign Number */}
+                    <text x={x} y={y} className="text-[8px] fill-white font-bold" textAnchor="middle" dominantBaseline="middle" >
+                        {house.sign}
                     </text>
 
                      {/* Planets */}
@@ -144,22 +151,6 @@ export function KundaliChart({ planetsInHouses, ascendant = 1 }: { planetsInHous
                 </g>
             )
         })}
-
-        {/* Signs - this is a simplified representation */}
-        <g className="text-[4px] fill-white/60" textAnchor="middle" dominantBaseline="middle">
-          <text x="50" y="45">{houses[0].sign}</text>
-          <text x="20" y="30">{houses[1].sign}</text>
-          <text x="30" y="20">{houses[2].sign}</text>
-          <text x="50" y="15">{houses[3].sign}</text>
-          <text x="70" y="20">{houses[4].sign}</text>
-          <text x="80" y="30">{houses[5].sign}</text>
-          <text x="50" y="55">{houses[6].sign}</text>
-          <text x="80" y="70">{houses[7].sign}</text>
-          <text x="70" y="80">{houses[8].sign}</text>
-          <text x="50" y="85">{houses[9].sign}</text>
-          <text x="30" y="80">{houses[10].sign}</text>
-          <text x="20" y="70">{houses[11].sign}</text>
-        </g>
       </svg>
     </div>
   );

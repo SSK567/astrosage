@@ -122,7 +122,7 @@ export function BirthChartClient() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <KundaliChart planetsInHouses={result.planetsInHouses || {}} />
+                <KundaliChart planetsInHouses={result.planetsInHouses || {}} ascendant={1} />
               </CardContent>
             </Card>
           </div>
