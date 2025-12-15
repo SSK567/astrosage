@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -33,6 +34,11 @@ const InterpretBirthChartOutputSchema = z.object({
     .describe('Insights into the user personality based on the birth chart.'),
   strengths: z.string().describe('The strengths of the user.'),
   weaknesses: z.string().describe('The weaknesses of the user.'),
+  planetsInHouses: z
+    .record(z.string(), z.string())
+    .describe(
+      'A record of each planet and its corresponding house in the birth chart.'
+    ),
 });
 export type InterpretBirthChartOutput = z.infer<typeof InterpretBirthChartOutputSchema>;
 
@@ -51,7 +57,7 @@ const prompt = ai.definePrompt({
   Based on the user's birth details and planetary positions, provide insights into their personality, strengths, and weaknesses.
 
   Birth Date: {{{birthDate}}}
-  Birth Time: {{{birthTime}}}
+  BirthTime: {{{birthTime}}}
   Birth Location: {{{birthLocation}}}
   Planets in Houses: {{#each planetsInHouses}}{{{@key}}}: {{{this}}}\n{{/each}}
 
@@ -60,6 +66,8 @@ const prompt = ai.definePrompt({
 
   Provide a comprehensive analysis of the user's birth chart, highlighting key aspects and their potential impact on the user's life.
   Format output in markdown.
+  
+  Also, return the original planetsInHouses object in the output.
   `,
 });
 
@@ -71,6 +79,11 @@ const interpretBirthChartFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('Failed to get interpretation from AI');
+    }
+    // Ensure the planetsInHouses data is passed through.
+    output.planetsInHouses = input.planetsInhouses;
+    return output;
   }
 );

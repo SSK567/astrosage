@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -30,6 +31,7 @@ import {
 } from "@/ai/flows/interpret-birth-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { KundaliChart } from "@/components/kundali-chart";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -107,37 +109,63 @@ export function BirthChartClient() {
 
   if (result) {
     return (
-        <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in-50 duration-500">
-            <h2 className="text-3xl font-bold text-center">Your Cosmic Blueprint, {form.getValues('name')}</h2>
+      <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in-50 duration-500">
+        <h2 className="text-3xl font-bold text-center">
+          Your Cosmic Blueprint, {form.getValues("name")}
+        </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="lg:order-2">
+            <Card className="sticky top-20">
+              <CardHeader>
+                <CardTitle className="text-center text-2xl">
+                  Your Kundali Chart
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <KundaliChart planetsInHouses={result.planetsInHouses || {}} />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="space-y-8 lg:order-1">
             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-2xl text-accent"><Sparkles/> Personality Insights</CardTitle>
-                </CardHeader>
-                <CardContent className="prose prose-lg dark:prose-invert max-w-none text-foreground/90">
-                    <p>{result.personalityInsights}</p>
-                </CardContent>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-2xl text-accent">
+                  <Sparkles /> Personality Insights
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="prose prose-lg dark:prose-invert max-w-none text-foreground/90">
+                <p>{result.personalityInsights}</p>
+              </CardContent>
             </Card>
-             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-2xl text-accent"><Star/> Your Strengths</CardTitle>
-                </CardHeader>
-                <CardContent className="prose prose-lg dark:prose-invert max-w-none text-foreground/90">
-                     <p>{result.strengths}</p>
-                </CardContent>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-2xl text-accent">
+                  <Star /> Your Strengths
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="prose prose-lg dark:prose-invert max-w-none text-foreground/90">
+                <p>{result.strengths}</p>
+              </CardContent>
             </Card>
-             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-2xl text-accent"><Zap/> Potential Weaknesses</CardTitle>
-                </CardHeader>
-                <CardContent className="prose prose-lg dark:prose-invert max-w-none text-foreground/90">
-                     <p>{result.weaknesses}</p>
-                </CardContent>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-2xl text-accent">
+                  <Zap /> Potential Weaknesses
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="prose prose-lg dark:prose-invert max-w-none text-foreground/90">
+                <p>{result.weaknesses}</p>
+              </CardContent>
             </Card>
-            <div className="text-center">
-                <Button onClick={resetForm} variant="secondary" size="lg">Generate Another Chart</Button>
-            </div>
+          </div>
         </div>
-    )
+        <div className="text-center">
+          <Button onClick={resetForm} variant="secondary" size="lg">
+            Generate Another Chart
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
