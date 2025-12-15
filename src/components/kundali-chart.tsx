@@ -30,32 +30,34 @@ interface House {
   planets: string[];
 }
 
-// Defines the 12 houses in North Indian chart style, starting from the top diamond (1st house).
-const houseLayout = [
-  { id: 1, path: "M 50,5 L 95,50 L 50,95 L 5,50 Z" }, // Top (Ascendant)
-  { id: 2, path: "M 5,50 L 50,5 L 5,5 Z" },
-  { id: 3, path: "M 5,50 L 50,95 L 5,95 Z" },
-  { id: 4, path: "M 5,50 L 50,95 L 95,95 L 95,50 Z" }, // Left
-  { id: 5, path: "M 50,95 L 95,95 L 95,50 Z" },
-  { id: 6, path: "M 50,95 L 95,50 L 95,5 Z" },
-  { id: 7, path: "M 95,50 L 50,5 L 5,50 L 50,95 Z" }, // Bottom
-  { id: 8, path: "M 50,5 L 5,5 L 5,50 Z" },
-  { id: 9, path: "M 50,5 L 5,50 L 5,95 Z" },
-  { id: 10, path: "M 5,5 L 50,5 L 95,5 L 95,50 Z" }, // Right
-  { id: 11, path: "M 95,5 L 50,5 L 5,5 Z" },
-  { id: 12, path: "M 95,5 L 5,5 L 5,50 Z" },
-];
-
 const houseCenters: { [key: number]: { x: number; y: number } } = {
-  1: { x: 50, y: 50 },  4: { x: 50, y: 50 },  7: { x: 50, y: 50 },  10: { x: 50, y: 50 },
-  2: { x: 20, y: 20 },  3: { x: 20, y: 80 },  5: { x: 80, y: 80 },  6: { x: 80, 20 },
-  8: { x: 20, y: 20 },  9: { x: 20, y: 80 },  11: { x: 80, y: 80 }, 12: { x: 80, 20 },
+  1: { x: 50, y: 50 },
+  2: { x: 27.5, y: 27.5 },
+  3: { x: 27.5, y: 72.5 },
+  4: { x: 50, y: 72.5 },
+  5: { x: 72.5, y: 72.5 },
+  6: { x: 72.5, y: 27.5 },
+  7: { x: 50, y: 50 },
+  8: { x: 27.5, y: 27.5 },
+  9: { x: 27.5, y: 72.5 },
+  10: { x: 50, y: 27.5 },
+  11: { x: 72.5, y: 72.5 },
+  12: { x: 72.5, y: 27.5 },
 };
 
 const signPositions: { [key: number]: { x: number; y: number } } = {
-    1: { x: 50, y: 20 }, 2: { x: 20, y: 35 }, 3: { x: 35, y: 80 }, 4: { x: 50, y: 65 },
-    5: { x: 65, y: 80 }, 6: { x: 80, y: 65 }, 7: { x: 50, y: 80 }, 8: { x: 80, y: 35 },
-    9: { x: 65, y: 20 }, 10: { x: 50, y: 35 }, 11: { x: 35, y: 20 }, 12: { x: 20, y: 65 }
+    1: { x: 50, y: 20 },
+    2: { x: 20, y: 20 },
+    3: { x: 20, y: 80 },
+    4: { x: 50, y: 80 },
+    5: { x: 80, y: 80 },
+    6: { x: 80, y: 20 },
+    7: { x: 50, y: 80 },
+    8: { x: 80, y: 80 },
+    9: { x: 80, y: 20 },
+    10: { x: 50, y: 20 },
+    11: { x: 20, y: 20 },
+    12: { x: 20, y: 80 }
 };
 
 // Improved positioning for planets within a house
@@ -64,7 +66,7 @@ const getPlanetPositions = (planetCount: number) => {
     if (planetCount === 0) return positions;
 
     const gridDimension = Math.ceil(Math.sqrt(planetCount));
-    const step = 10; // Spacing between planets
+    const step = 12; // Spacing between planets
 
     for (let i = 0; i < planetCount; i++) {
         const row = Math.floor(i / gridDimension);
@@ -94,8 +96,8 @@ export function KundaliChart({ planetsInHouses, ascendant = 1 }: { planetsInHous
     const houseNumberMatch = houseStr.match(/\d+/);
     if (houseNumberMatch) {
       const houseNumber = parseInt(houseNumberMatch[0], 10);
-      const houseIndex = (houseNumber - ascendant + 12) % 12;
-      if (houseIndex >= 0 && houseIndex < 12) {
+      const houseIndex = houses.findIndex(h => h.sign === houseNumber);
+      if (houseIndex !== -1) {
         const planetShortName = planetShortNames[planet as Planet];
         if (planetShortName) {
             houses[houseIndex].planets.push(planetShortName);
