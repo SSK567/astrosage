@@ -31,11 +31,20 @@ export type InterpretBirthChartInput = z.infer<typeof InterpretBirthChartInputSc
 const InterpretBirthChartOutputSchema = z.object({
   personalityInsights: z
     .string()
+
     .describe('Insights into the user personality based on the birth chart.'),
   strengths: z.string().describe('The strengths of the user.'),
   weaknesses: z.string().describe('The weaknesses of the user.'),
   planetsInHouses: z
-    .record(z.string(), z.string())
+    .object({
+      Sun: z.string().describe("The house containing the Sun."),
+      Moon: z.string().describe("The house containing the Moon."),
+      Mercury: z.string().describe("The house containing Mercury."),
+      Venus: z.string().describe("The house containing Venus."),
+      Mars: z.string().describe("The house containing Mars."),
+      Jupiter: z.string().describe("The house containing Jupiter."),
+      Saturn: z.string().describe("The house containing Saturn."),
+    })
     .describe(
       'A record of each planet and its corresponding house in the birth chart.'
     ),
@@ -83,7 +92,7 @@ const interpretBirthChartFlow = ai.defineFlow(
       throw new Error('Failed to get interpretation from AI');
     }
     // Ensure the planetsInHouses data is passed through.
-    output.planetsInHouses = input.planetsInhouses;
+    output.planetsInHouses = input.planetsInHouses;
     return output;
   }
 );
