@@ -107,15 +107,15 @@ export function KundaliChart({ planetsInHouses, ascendant = 1 }: { planetsInHous
     <div className="w-full max-w-md mx-auto aspect-square">
       <svg viewBox="0 0 100 100" className="w-full h-full">
         {/* Outer Frame */}
-        <path d="M50 0 L100 50 L50 100 L0 50 Z" className="fill-background stroke-accent/50" strokeWidth="1" />
-        <path d="M50 2 L98 50 L50 98 L2 50 Z" className="fill-background stroke-accent" strokeWidth="0.5" />
+        <path d="M50 0 L100 50 L50 100 L0 50 Z" className="fill-background stroke-red-500/50" strokeWidth="1" />
+        <path d="M50 2 L98 50 L50 98 L2 50 Z" className="fill-background stroke-red-500" strokeWidth="0.5" />
 
         {/* Inner Lines */}
-        <path d="M0 50 L100 50" className="stroke-accent/70" strokeWidth="0.5" />
-        <path d="M50 0 L50 100" className="stroke-accent/70" strokeWidth="0.5" />
-        <path d="M0 50 L50 100 L100 50 L50 0 L0 50" className="stroke-accent/70" strokeWidth="0.5" />
-        <path d="M50 0 L100 50" className="stroke-accent/70" strokeWidth="0.5" />
-        <path d="M50 100 L0 50" className="stroke-accent/70" strokeWidth="0.5" />
+        <path d="M0 50 L100 50" className="stroke-red-500/70" strokeWidth="0.5" />
+        <path d="M50 0 L50 100" className="stroke-red-500/70" strokeWidth="0.5" />
+        <path d="M0 50 L50 100 L100 50 L50 0 L0 50" className="stroke-red-500/70" strokeWidth="0.5" />
+        <path d="M50 0 L100 50" className="stroke-red-500/70" strokeWidth="0.5" />
+        <path d="M50 100 L0 50" className="stroke-red-500/70" strokeWidth="0.5" />
 
         {/* Houses */}
         {houses.map((house) => {
@@ -124,7 +124,7 @@ export function KundaliChart({ planetsInHouses, ascendant = 1 }: { planetsInHous
             return (
                 <g key={`house-${house.id}`}>
                     {/* House Number */}
-                    <text x={x} y={y} className="text-[6px] fill-foreground/80 font-bold" textAnchor="middle" dominantBaseline="middle" >
+                    <text x={x} y={y} className="text-[6px] fill-white font-bold" textAnchor="middle" dominantBaseline="middle" >
                         {house.id}
                     </text>
 
@@ -134,7 +134,7 @@ export function KundaliChart({ planetsInHouses, ascendant = 1 }: { planetsInHous
                             key={planet}
                             x={x + planetPos[index].x}
                             y={y + planetPos[index].y}
-                            className="text-[5px] fill-foreground"
+                            className="text-[5px] fill-white"
                             textAnchor="middle"
                             dominantBaseline="middle"
                         >
@@ -146,7 +146,7 @@ export function KundaliChart({ planetsInHouses, ascendant = 1 }: { planetsInHous
         })}
 
         {/* Signs - this is a simplified representation */}
-        <g className="text-[4px] fill-foreground/60" textAnchor="middle" dominantBaseline="middle">
+        <g className="text-[4px] fill-white/60" textAnchor="middle" dominantBaseline="middle">
           <text x="50" y="45">{houses[0].sign}</text>
           <text x="20" y="30">{houses[1].sign}</text>
           <text x="30" y="20">{houses[2].sign}</text>
